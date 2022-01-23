@@ -1,0 +1,175 @@
+﻿<Window x:Class="catalog.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:catalog"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        Height="400" Width="800"
+        MinHeight="400" MinWidth="800"
+        Background="#252526">
+
+    <Window.Resources>
+
+        <Style x:Key="MainButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="0, 10"/>
+            <Setter Property="Height" Value="25"/>            
+        </Style>
+        
+        <Style x:Key="ButtonPageStyle" TargetType="Button">
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+        
+        <Style x:Key="CancelButtonsStyle" TargetType="Button" BasedOn="{StaticResource ButtonPageStyle}">
+            <Setter Property="Content" Value="Отмена"/>
+            <EventSetter Event="Click" Handler="CancelButton_Click"/>
+        </Style>
+
+        <Style x:Key="BaseLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style x:Key="TopLabelPageStyle" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+
+        <Style x:Key="LabelPageStyle" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="30, 0"/>
+        </Style>
+
+        <Style x:Key="TextBoxPageStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="MaxLength" Value="64"/>
+        </Style>
+
+        <Style x:Key="TextBoxDescriptionPageStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxPageStyle}">
+            <Setter Property="MaxLength" Value="512"/>
+        </Style>
+
+        <Style x:Key="ComboBoxPageStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>            
+        </Style>
+
+
+    </Window.Resources>
+    
+    
+    <Grid>
+        
+        <Grid x:Name="Grid_AddAndUpdateDevice" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label x:Name="lblTopPage" Grid.RowSpan="2" Grid.ColumnSpan="2"  Style="{StaticResource TopLabelPageStyle}"/>
+
+            <Label Content="Наименование" Grid.Row="2" Style="{StaticResource LabelPageStyle}"/>
+            <TextBox x:Name="tbAddAndUpdate_DeviceName" Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
+
+            <Label Content="Марка" Grid.Row="3" Style="{StaticResource LabelPageStyle}"/>
+            <TextBox x:Name="tbAddAndUpdate_DeviceModel" Grid.Row="3" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
+
+            <Label Content="Описание" Grid.Row="4" Style="{StaticResource LabelPageStyle}"/>
+            <TextBox x:Name="tbAddAndUpdate_DeviceDescription" Grid.Row="4" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
+
+            <Label Content="Категория" Grid.Row="5" Style="{StaticResource LabelPageStyle}"/>
+            <ComboBox x:Name="cbAddAndUpdate_DeviceCategory" Grid.Row="5" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}"/>
+
+            <Label Content="Отрасль" Grid.Row="6" Style="{StaticResource LabelPageStyle}"/>
+            <ComboBox x:Name="cbAddAndUpdate_DeviceSector" Grid.Row="6" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}"/>
+
+            <Button x:Name="btnUpdate_Device" Content="Сохранить" Grid.Row="7" Grid.Column="0" Click="btnUpdateDevice_Click" Style="{StaticResource ButtonPageStyle}"/>
+            <Button x:Name="btnAdd_Device" Content="Добавить" Grid.Row="7" Grid.Column="0" Click="btnAdd_Device_Click" Style="{StaticResource ButtonPageStyle}"/>
+            <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource CancelButtonsStyle}"/>
+
+        </Grid>
+
+
+        <Grid x:Name="Grid_AllDevice" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <DataGrid x:Name="dgAll_Devices" Grid.ColumnSpan="3" Margin="15" IsReadOnly="True">
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="ID" Width="0.5*"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*"/>
+                    <DataGridTextColumn Header="Модель" Width="*"/>
+                    <DataGridTextColumn Header="Описание" Width="2*"/>
+                    <DataGridComboBoxColumn Header="Категория" Width="*"/>
+                    <DataGridComboBoxColumn Header="Отрасль" Width="*"/>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Orientation="Vertical" Grid.Column="3" VerticalAlignment="Center">
+                <Button x:Name="btnAll_AddDevice" Content="Добавить оборудование" Click="btnAddDevice_Click" Style="{StaticResource MainButtonStyle}"/>
+                <Button x:Name="btnAll_UpdateDevice" Content="Изменить оборудование" Click="btnUpdateDevice_Click" Style="{StaticResource MainButtonStyle}"/>
+                <Button x:Name="btnAll_DeleteDevice" Content="Удалить оборудование" Click="btnDeleteDevice_Click" Style="{StaticResource MainButtonStyle}"/>
+            </StackPanel>
+
+
+            <DataGrid x:Name="dgAll_Category" Grid.ColumnSpan="2" Grid.Row="1" Margin="15" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="0.5*"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*"/>
+                    <DataGridTextColumn Header="Описание" Width="2*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button x:Name="btnAll_AddCategory" Content="Добавить категорию" Grid.Row="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+            <Button x:Name="btnAll_DeleteCategory" Content="Удалить категорию" Grid.Row="2" Grid.Column="1"  Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+
+
+            <DataGrid x:Name="dgAll_Sector" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="2" Margin="15" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="0.5*"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*"/>
+                    <DataGridTextColumn Header="Описание" Width="2*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button x:Name="btnAll_AddSector" Content="Добавить отрасль" Grid.Row="2" Grid.Column="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+            <Button x:Name="btnAll_DeleteSector" Content="Удалить отрасль" Grid.Row="2" Grid.Column="3"  Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+
+        </Grid>
+
+    </Grid>
+</Window>
