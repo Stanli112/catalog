@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:catalog"
+        xmlns:local_txt="clr-namespace:QuickZip.Controls"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="400" Width="800"
@@ -95,7 +96,8 @@
             <Label x:Name="lblTopPage" Grid.RowSpan="2" Grid.ColumnSpan="2"  Style="{StaticResource TopLabelPageStyle}"/>
 
             <Label Content="Наименование" Grid.Row="2" Style="{StaticResource LabelPageStyle}"/>
-            <TextBox x:Name="tbAddAndUpdate_DeviceName" Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
+            <local_txt:AytoSelectTextBox x:Name="tbAddAndUpdate_DeviceName" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding G_devices}"/>
+            <!--<TextBox x:Name="tbAddAndUpdate_DeviceName" Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>-->
 
             <Label Content="Марка" Grid.Row="3" Style="{StaticResource LabelPageStyle}"/>
             <TextBox x:Name="tbAddAndUpdate_DeviceModel" Grid.Row="3" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
@@ -133,7 +135,7 @@
             </Grid.ColumnDefinitions>
 
             <DataGrid x:Name="dgAll_Devices" Grid.ColumnSpan="3" Margin="15" IsReadOnly="True" AutoGenerateColumns="False" 
-                      ItemsSource="{Binding G_devices}" >
+                      ItemsSource="{Binding G_devices}" SelectionChanged="dgAll_Devices_SelectionChanged">
                 <DataGrid.Columns>
 
                     <DataGridTextColumn Header="ID" Width="0.5*" Binding="{Binding ID_device}"/>
@@ -147,6 +149,8 @@
             </DataGrid>
 
             <StackPanel Orientation="Vertical" Grid.Column="3" VerticalAlignment="Center">
+                <Image Grid.Column="0" x:Name="imgAll_Device" Margin="10"/>
+
                 <Button x:Name="btnAll_AddDevice" Content="Добавить оборудование" Click="btnAddDevice_Click" Style="{StaticResource MainButtonStyle}"/>
                 <Button x:Name="btnAll_UpdateDevice" Content="Изменить оборудование" Click="btnUpdateDevice_Click" Style="{StaticResource MainButtonStyle}"/>
                 <Button x:Name="btnAll_DeleteDevice" Content="Удалить оборудование" Click="btnDeleteDevice_Click" Style="{StaticResource MainButtonStyle}"/>

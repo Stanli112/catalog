@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -421,7 +422,10 @@ namespace catalog
         {
             if (VerifyDataControls())
             {
-                UpdateDeviceFromDB(connection, new Device(0, tbAddAndUpdate_DeviceName.Text, tbAddAndUpdate_DeviceModel.Text,
+                UpdateDeviceFromDB(connection, new Device(
+                    ((Device)dgAll_Devices.SelectedItem).ID_device, 
+                    tbAddAndUpdate_DeviceName.Text, 
+                    tbAddAndUpdate_DeviceModel.Text,
                     tbAddAndUpdate_DeviceDescription.Text,
                     (Category)cbAddAndUpdate_DeviceCategory.SelectedItem,
                     (Sector)cbAddAndUpdate_DeviceSector.SelectedItem));
@@ -445,6 +449,17 @@ namespace catalog
             else
             {
                 MessageBox.Show("Выберите отрасль.");
+            }
+        }
+
+        private void dgAll_Devices_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var dataImage = ((Device)dgAll_Devices.SelectedItem).Image;
+            if (dataImage != null)
+            {
+                BitmapImage img = new BitmapImage();
+                img.StreamSource = new MemoryStream(dataImage);
+                imgAll_Device.Source = img;
             }
         }
     }
