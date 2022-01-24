@@ -13,7 +13,7 @@
     <Window.Resources>
 
         <Style x:Key="MainButtonStyle" TargetType="Button">
-            <Setter Property="Margin" Value="0, 10"/>
+            <Setter Property="Margin" Value="0, 10, 10, 0"/>
             <Setter Property="Height" Value="25"/>            
         </Style>
         
@@ -65,8 +65,12 @@
         </Style>
 
 
+        
     </Window.Resources>
-    
+
+    <!--<Window.DataContext>
+        --><!--<local:MainWindow/>--><!--
+    </Window.DataContext>-->
     
     <Grid>
         
@@ -100,12 +104,14 @@
             <TextBox x:Name="tbAddAndUpdate_DeviceDescription" Grid.Row="4" Grid.Column="1" Style="{StaticResource TextBoxPageStyle}"/>
 
             <Label Content="Категория" Grid.Row="5" Style="{StaticResource LabelPageStyle}"/>
-            <ComboBox x:Name="cbAddAndUpdate_DeviceCategory" Grid.Row="5" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}"/>
+            <ComboBox x:Name="cbAddAndUpdate_DeviceCategory" Grid.Row="5" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}" 
+                      ItemsSource="{Binding G_category}" DisplayMemberPath="Name"/>
 
             <Label Content="Отрасль" Grid.Row="6" Style="{StaticResource LabelPageStyle}"/>
-            <ComboBox x:Name="cbAddAndUpdate_DeviceSector" Grid.Row="6" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}"/>
+            <ComboBox x:Name="cbAddAndUpdate_DeviceSector" Grid.Row="6" Grid.Column="1" Style="{StaticResource ComboBoxPageStyle}"
+                      ItemsSource="{Binding G_sector}" DisplayMemberPath="Name" />
 
-            <Button x:Name="btnUpdate_Device" Content="Сохранить" Grid.Row="7" Grid.Column="0" Click="btnUpdateDevice_Click" Style="{StaticResource ButtonPageStyle}"/>
+            <Button x:Name="btnUpdate_Device" Content="Сохранить" Grid.Row="7" Grid.Column="0" Click="btnUpdate_Device_Click" Style="{StaticResource ButtonPageStyle}"/>
             <Button x:Name="btnAdd_Device" Content="Добавить" Grid.Row="7" Grid.Column="0" Click="btnAdd_Device_Click" Style="{StaticResource ButtonPageStyle}"/>
             <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource CancelButtonsStyle}"/>
 
@@ -126,15 +132,16 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <DataGrid x:Name="dgAll_Devices" Grid.ColumnSpan="3" Margin="15" IsReadOnly="True">
+            <DataGrid x:Name="dgAll_Devices" Grid.ColumnSpan="3" Margin="15" IsReadOnly="True" AutoGenerateColumns="False" 
+                      ItemsSource="{Binding G_devices}" >
                 <DataGrid.Columns>
 
-                    <DataGridTextColumn Header="ID" Width="0.5*"/>
-                    <DataGridTextColumn Header="Наименование" Width="2*"/>
-                    <DataGridTextColumn Header="Модель" Width="*"/>
-                    <DataGridTextColumn Header="Описание" Width="2*"/>
-                    <DataGridComboBoxColumn Header="Категория" Width="*"/>
-                    <DataGridComboBoxColumn Header="Отрасль" Width="*"/>
+                    <DataGridTextColumn Header="ID" Width="0.5*" Binding="{Binding ID_device}"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Модель" Width="*" Binding="{Binding Model}"/>
+                    <DataGridTextColumn Header="Описание" Width="2*" Binding="{Binding Description}"/>
+                    <DataGridTextColumn Header="Категория" Width="*" Binding="{Binding Category.Name}"/>
+                    <DataGridTextColumn Header="Отрасль" Width="*" Binding="{Binding Sector.Name}"/>
 
                 </DataGrid.Columns>
             </DataGrid>
@@ -146,28 +153,32 @@
             </StackPanel>
 
 
-            <DataGrid x:Name="dgAll_Category" Grid.ColumnSpan="2" Grid.Row="1" Margin="15" IsReadOnly="True">
+            <DataGrid x:Name="dgAll_Category" Grid.ColumnSpan="2" Grid.Row="1" Margin="15" IsReadOnly="True" AutoGenerateColumns="False" 
+                      ItemsSource="{Binding G_category}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Width="0.5*"/>
-                    <DataGridTextColumn Header="Наименование" Width="2*"/>
-                    <DataGridTextColumn Header="Описание" Width="2*"/>
+                    <DataGridTextColumn Header="ID" Width="0.5*" Binding="{Binding ID_category}"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Описание" Width="2*" Binding="{Binding Description}"/>
                 </DataGrid.Columns>
             </DataGrid>
 
             <Button x:Name="btnAll_AddCategory" Content="Добавить категорию" Grid.Row="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
-            <Button x:Name="btnAll_DeleteCategory" Content="Удалить категорию" Grid.Row="2" Grid.Column="1"  Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+            <Button x:Name="btnAll_DeleteCategory" Content="Удалить категорию" Grid.Row="2" Grid.Column="1"  Margin="15, 0" 
+                    Style="{StaticResource MainButtonStyle}" Click="btnAll_DeleteCategory_Click"/>
 
 
-            <DataGrid x:Name="dgAll_Sector" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="2" Margin="15" IsReadOnly="True">
+            <DataGrid x:Name="dgAll_Sector" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="2" Margin="15" IsReadOnly="True" AutoGenerateColumns="False" 
+                      ItemsSource="{Binding G_sector}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Width="0.5*"/>
-                    <DataGridTextColumn Header="Наименование" Width="2*"/>
-                    <DataGridTextColumn Header="Описание" Width="2*"/>
+                    <DataGridTextColumn Header="ID" Width="0.5*" Binding="{Binding ID_sector}"/>
+                    <DataGridTextColumn Header="Наименование" Width="2*" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Описание" Width="2*" Binding="{Binding Description}"/>
                 </DataGrid.Columns>
             </DataGrid>
 
             <Button x:Name="btnAll_AddSector" Content="Добавить отрасль" Grid.Row="2" Grid.Column="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
-            <Button x:Name="btnAll_DeleteSector" Content="Удалить отрасль" Grid.Row="2" Grid.Column="3"  Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
+            <Button x:Name="btnAll_DeleteSector" Content="Удалить отрасль" Grid.Row="2" Grid.Column="3"  Margin="15, 0" 
+                    Style="{StaticResource MainButtonStyle}" Click="btnAll_DeleteSector_Click" />
 
         </Grid>
 
