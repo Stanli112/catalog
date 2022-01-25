@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "catalog", "catalog.csproj", "{EB57619D-E093-45B1-AFCE-FA0262A31ABB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "catalog", "catalog.csproj", "{EB57619D-E093-45B1-AFCE-FA0262A31ABB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogTests", "..\CatalogTests\CatalogTests.csproj", "{68D52446-EC2D-44AB-955A-11F2D6E78F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EB57619D-E093-45B1-AFCE-FA0262A31ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB57619D-E093-45B1-AFCE-FA0262A31ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB57619D-E093-45B1-AFCE-FA0262A31ABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68D52446-EC2D-44AB-955A-11F2D6E78F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68D52446-EC2D-44AB-955A-11F2D6E78F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68D52446-EC2D-44AB-955A-11F2D6E78F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68D52446-EC2D-44AB-955A-11F2D6E78F01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

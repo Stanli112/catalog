@@ -177,8 +177,6 @@ namespace catalog
                                 reader.GetValue(1).ToString(),
                                 reader.GetValue(2).ToString(),
                                 reader.GetValue(3).ToString(),
-                                //reader.GetValue(4),
-                                //reader.GetValue(5),
                                 category,
                                 sector)
                             );
@@ -206,7 +204,7 @@ namespace catalog
             g_sector.Add(sector);
         }
 
-        void AddDeviceToDB(SqliteConnection conn, Device device)
+        public void AddDeviceToDB(SqliteConnection conn, Device device)
         {
             var _category = device.Category == null ? "NULL" : device.Category.ID_category.ToString();
             var _sector = device.Sector == null ? "NULL" : device.Sector.ID_sector.ToString();
