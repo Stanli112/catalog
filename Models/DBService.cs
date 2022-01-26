@@ -266,7 +266,7 @@ namespace catalog.Models
                 var _sector = device.Sector.ID_sector == 0 ? "NULL" : device.Sector.ID_sector.ToString();
                 var _img_data = device.Image == null ? new byte[0] : device.Image;
 
-SqliteCommand comm = connection.CreateCommand();
+                SqliteCommand comm = connection.CreateCommand();
                 comm.Parameters.Add(new SqliteParameter("@ImageData", _img_data));
                 comm.CommandText = $"UPDATE Devices " +
                     $"SET Name='{device.Name}', Model='{device.Model}', Description='{device.Description}', ID_category={_category}, ID_sector={_sector}, Image=@ImageData  " +

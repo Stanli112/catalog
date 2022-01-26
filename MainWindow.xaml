@@ -167,8 +167,8 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button x:Name="btnAll_AddCategory" Content="Добавить категорию" Grid.Row="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
-            <Button x:Name="btnAll_DeleteCategory" Content="Удалить категорию" Grid.Row="2" Grid.Column="1"  Margin="15, 0" 
+            <Button x:Name="btnAll_AddCategory" Content="Добавить категорию" Grid.Row="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}" Visibility="Hidden"/>
+            <Button x:Name="btnAll_DeleteCategory" Content="Удалить категорию" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Margin="15, 0" 
                     Style="{StaticResource MainButtonStyle}" Click="btnAll_DeleteCategory_Click"/>
 
 
@@ -181,8 +181,8 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button x:Name="btnAll_AddSector" Content="Добавить отрасль" Grid.Row="2" Grid.Column="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}"/>
-            <Button x:Name="btnAll_DeleteSector" Content="Удалить отрасль" Grid.Row="2" Grid.Column="3"  Margin="15, 0" 
+            <Button x:Name="btnAll_AddSector" Content="Добавить отрасль" Grid.Row="2" Grid.Column="2" Margin="15, 0" Style="{StaticResource MainButtonStyle}" Visibility="Hidden"/>
+            <Button x:Name="btnAll_DeleteSector" Content="Удалить отрасль" Grid.Row="2" Grid.Column="2"  Grid.ColumnSpan="2" Margin="15, 0" 
                     Style="{StaticResource MainButtonStyle}" Click="btnAll_DeleteSector_Click" />
 
         </Grid>

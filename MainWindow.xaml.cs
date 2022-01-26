@@ -26,7 +26,6 @@ namespace catalog
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private const string _file_db_name = "catalog.db";
-        //private byte[] import_image;
 
         private DBService _service;
 
@@ -77,54 +76,7 @@ namespace catalog
             G_devices = _service.GetDevicesFromDB();
         }
 
-        #region Test Values
-        void AddTestValues(SqliteConnection conn)
-        {
-            AddValuesInCategory(conn);
-            AddValuesInSector(conn);
-            AddValuesInDevice(conn);
-        }
-
-        void AddValuesInCategory(SqliteConnection conn)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "INSERT INTO Category (Name, Description) VALUES " +
-                "('Category_1', 'Description_1')," +
-                "('Category_2', 'Description_2')," +
-                "('Category_3', 'Description_3')," +
-                "('Category_4', 'Description_4')";
-            comm.ExecuteNonQuery();
-        }
-
-        void AddValuesInSector(SqliteConnection conn)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "INSERT INTO Sector (Name, Description) VALUES " +
-                "('Sector_1', 'Description_1')," +
-                "('Sector_2', 'Description_2')," +
-                "('Sector_3', 'Description_3')," +
-                "('Sector_4', 'Description_4')";
-            comm.ExecuteNonQuery();
-        }
-
-        void AddValuesInDevice(SqliteConnection conn)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "INSERT INTO Devices (Name, Model, Description, ID_category, ID_sector) VALUES " +
-                "('Device_1', 'Model_1', 'Description_1', 1, 1)," +
-                "('Device_2', 'Model_1', 'Description_2', 1, 2)," +
-                "('Device_3', 'Model_1', 'Description_3', 2, 3)," +
-                "('Device_4', 'Model_2', 'Description_4', 2, 1)," +
-                "('Device_5', 'Model_2', 'Description_5', 3, 2)," +
-                "('Device_6', 'Model_3', 'Description_6', 3, 1)," +
-                "('Device_7', 'Model_3', 'Description_7', 2, 2)," +
-                "('Device_8', 'Model_4', 'Description_8', 4, 4)," +
-                "('Device_9', 'Model_5', 'Description_9', 4, 3)," +
-                "('Device_10', 'Model_5', 'Description_10', 1, 4)";
-            comm.ExecuteNonQuery();
-        }
-        #endregion
-
+        
         #region Main page device controls handlers
 
         private void btnAll_ChangeImgDevice_Click(object sender, RoutedEventArgs e)
