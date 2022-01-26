@@ -151,6 +151,7 @@
             <StackPanel Orientation="Vertical" Grid.Column="3" VerticalAlignment="Center">
                 <Image Grid.Column="0" x:Name="imgAll_Device" Margin="10"/>
 
+                <Button x:Name="btnAll_ChangeImgDevice" Content="Изменить изображение" Click="btnAll_ChangeImgDevice_Click" Style="{StaticResource MainButtonStyle}"/>
                 <Button x:Name="btnAll_AddDevice" Content="Добавить оборудование" Click="btnAddDevice_Click" Style="{StaticResource MainButtonStyle}"/>
                 <Button x:Name="btnAll_UpdateDevice" Content="Изменить оборудование" Click="btnUpdateDevice_Click" Style="{StaticResource MainButtonStyle}"/>
                 <Button x:Name="btnAll_DeleteDevice" Content="Удалить оборудование" Click="btnDeleteDevice_Click" Style="{StaticResource MainButtonStyle}"/>

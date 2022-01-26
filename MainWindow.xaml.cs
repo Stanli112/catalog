@@ -1,5 +1,6 @@
 ﻿using catalog.Models;
 using Microsoft.Data.Sqlite;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,8 +25,10 @@ namespace catalog
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        const string file_db_name = "catalog.db";
-        public SqliteConnection connection;
+        private const string _file_db_name = "catalog.db";
+        //private byte[] import_image;
+
+        private DBService _service;
 
         private ObservableCollection<Device> g_devices;
         private ObservableCollection<Category> g_category;
@@ -61,200 +64,18 @@ namespace catalog
 
         void InitDataBase()
         {
-            string connStr = "Data Source=" + file_db_name;
-            connection = new SqliteConnection(connStr);
-            connection.Open();
-            if (connection.State == System.Data.ConnectionState.Open)
-            {
-                SqliteCommand comm = connection.CreateCommand();
-                
-                // create tables: device, category, sector
-                comm.CommandText = 
-                    // category
-                    "CREATE TABLE IF NOT EXISTS Category(" +
-                    "ID_category INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-                    "Name TEXT NOT NULL, " +
-                    "Description TEXT );" +
-                    // sector
-                    "CREATE TABLE IF NOT EXISTS Sector(" +
-                    "ID_sector INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-                    "Name TEXT NOT NULL, " +
-                    "Description TEXT );" +
-                    // devices
-                    "CREATE TABLE IF NOT EXISTS Devices(" +
-                    "ID_device INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-                    "Name TEXT NOT NULL, " +
-                    "Model INTEGER NOT NULL," +
-                    "Description TEXT," +
-                    "ID_category INTEGER, " +
-                    "ID_sector INTEGER, " +
-                    "FOREIGN KEY (ID_category)  REFERENCES Category (ID_category) ON DELETE SET NULL," +
-                    "FOREIGN KEY (ID_sector)  REFERENCES Sector (ID_sector) ON DELETE SET NULL);";
+            _service = new DBService(_file_db_name);
+            _service.CreateTables();
 
-                try
-                {
-                    comm.ExecuteReader();
-                    //AddTestValues(connection);
-                    GetDataFromDB(connection);
-
-                }
-                catch (Microsoft.Data.Sqlite.SqliteException exp)
-                {
-                    LocalDebug.Log(exp.Message);
-                }                
-            }
+            GetDataFromDB();
         }
 
-        #region Get Data From DataBase
-        void GetDataFromDB(SqliteConnection conn)
+        void GetDataFromDB()
         {
-            GetCategoryFromDB(conn);
-            GetSectorFromDB(conn);
-            GetDevicesFromDB(conn);
+            G_category = _service.GetCategoryFromDB();
+            G_sector = _service.GetSectorFromDB();
+            G_devices = _service.GetDevicesFromDB();
         }
-
-        void GetCategoryFromDB(SqliteConnection conn)
-        {
-            g_category.Clear();
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "SELECT * FROM Category";
-            using (SqliteDataReader reader = comm.ExecuteReader())
-            {
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        G_category.Add(new Category(Convert.ToInt32(reader.GetValue(0)),
-                                reader.GetValue(1).ToString(),
-                                reader.GetValue(2).ToString()));
-                    }
-                }
-            }
-        }
-
-        void GetSectorFromDB(SqliteConnection conn)
-        {
-            g_sector.Clear();
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "SELECT * FROM Sector";
-            using (SqliteDataReader reader = comm.ExecuteReader())
-            {
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        G_sector.Add(new Sector(Convert.ToInt32(reader.GetValue(0)),
-                                reader.GetValue(1).ToString(),
-                                reader.GetValue(2).ToString()));
-                    }
-                }
-            }
-        }
-
-        void GetDevicesFromDB(SqliteConnection conn)
-        {
-            g_devices.Clear();
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "SELECT * FROM Devices";
-            using (SqliteDataReader reader = comm.ExecuteReader())
-            {
-                if (reader.HasRows) 
-                {
-                    while (reader.Read())  
-                    {
-                        Category category = new Category();
-                        if(reader.GetValue(4) != DBNull.Value)
-                        {
-                            category = g_category.FirstOrDefault(t => t.ID_category == Convert.ToInt32(reader.GetValue(4)));
-                        }
-                        Sector sector = new Sector();
-                        if (reader.GetValue(5) != DBNull.Value)
-                        {
-                            sector = g_sector.FirstOrDefault(t => t.ID_sector == Convert.ToInt32(reader.GetValue(5)));
-                        }
-
-                        G_devices.Add( new Device( Convert.ToInt32(reader.GetValue(0)), 
-                                reader.GetValue(1).ToString(),
-                                reader.GetValue(2).ToString(),
-                                reader.GetValue(3).ToString(),
-                                category,
-                                sector)
-                            );
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region Add Data To DataBase
-
-        void AddCategoryToDB(SqliteConnection conn, Category category)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"INSERT INTO Category (Name, Description) VALUES ('{category.Name}', '{category.Description}')";
-            comm.ExecuteNonQuery();
-            g_category.Add(category);
-        }
-
-        void AddSectorToDB(SqliteConnection conn, Sector sector)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"INSERT INTO Sector (Name, Description) VALUES ('{sector.Name}', '{sector.Description}')";
-            comm.ExecuteNonQuery();
-            g_sector.Add(sector);
-        }
-
-        public void AddDeviceToDB(SqliteConnection conn, Device device)
-        {
-            var _category = device.Category == null ? "NULL" : device.Category.ID_category.ToString();
-            var _sector = device.Sector == null ? "NULL" : device.Sector.ID_sector.ToString();
-
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = "INSERT INTO Devices (Name, Model, Description, ID_category, ID_sector) VALUES " +
-                $"('{device.Name}', '{device.Model}', '{device.Description}', {_category }, {_sector})";
-            comm.ExecuteNonQuery();
-            g_devices.Add(device);
-        }
-
-        void DeleteCategoryFromDB(SqliteConnection conn, Category category)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"DELETE FROM Category WHERE ID_category={category.ID_category}";
-            comm.ExecuteNonQuery();
-            g_category.Remove(category);
-        }
-
-        void DeleteSectorFromDB(SqliteConnection conn, Sector sector)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"DELETE FROM Sector WHERE ID_sector={sector.ID_sector}";
-            comm.ExecuteNonQuery();
-            g_sector.Remove(sector);
-        }
-
-        void DeleteDeviceFromDB(SqliteConnection conn, Device device)
-        {
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"DELETE FROM Devices WHERE ID_device={device.ID_device}";
-            comm.ExecuteNonQuery();
-            g_devices.Remove(device);
-        }
-
-        void UpdateDeviceFromDB(SqliteConnection conn, Device device)
-        {
-            var _category = device.Category == null ? "NULL" : device.Category.ID_category.ToString();
-            var _sector = device.Sector == null ? "NULL" : device.Sector.ID_sector.ToString();
-
-            SqliteCommand comm = conn.CreateCommand();
-            comm.CommandText = $"UPDATE Devices " +
-                $"SET Name='{device.Name}', Model='{device.Model}', Description='{device.Description}', ID_category={_category}, ID_sector={_sector} " +
-                $"WHERE ID_device={device.ID_device}";
-            comm.ExecuteNonQuery();
-
-            CancelButton_Click(null, null);
-        }
-
-        #endregion
 
         #region Test Values
         void AddTestValues(SqliteConnection conn)
@@ -304,7 +125,22 @@ namespace catalog
         }
         #endregion
 
+        #region Main page device controls handlers
 
+        private void btnAll_ChangeImgDevice_Click(object sender, RoutedEventArgs e)
+        {
+            if(dgAll_Devices.SelectedItem != null)
+            {
+                OpenFileDialog file_dialog = new OpenFileDialog();
+                file_dialog.Filter = "Image Files(*.bmp;*.jpg;*.gif)|*.bmp;*.jpg;*.gif";
+                if (file_dialog.ShowDialog() == true)
+                {
+                    ((Device)dgAll_Devices.SelectedItem).Image = File.ReadAllBytes(file_dialog.FileName);
+                    _service.UpdateDeviceInDB((Device)dgAll_Devices.SelectedItem);
+                    dgAll_Devices_SelectionChanged(null, null);
+                }
+            }            
+        }
 
         private void btnAddDevice_Click(object sender, RoutedEventArgs e)
         {
@@ -339,16 +175,77 @@ namespace catalog
             
         }
 
+        private void dgAll_Devices_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dgAll_Devices.SelectedItem != null)
+            {
+                var dataImage = ((Device)dgAll_Devices.SelectedItem).Image;
+                if (dataImage == null || dataImage.Length == 0)
+                {
+                    imgAll_Device.Source = null;
+                }
+                if (dataImage != null)
+                {
+                    var image = new BitmapImage();
+                    using (var mem = new MemoryStream(dataImage))
+                    {
+                        mem.Position = 0;
+                        image.BeginInit();
+                        image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.UriSource = null;
+                        image.StreamSource = mem;
+                        image.EndInit();
+                    }
+                    image.Freeze();
+                    imgAll_Device.Source = image;
+                }
+            }
+        } 
+
         private void btnDeleteDevice_Click(object sender, RoutedEventArgs e)
         {
             if (dgAll_Devices.SelectedItem != null)
             {
-                DeleteDeviceFromDB(connection, (Device)dgAll_Devices.SelectedItems[0]);
+                if (_service.DeleteDeviceFromDB((Device)dgAll_Devices.SelectedItems[0]))
+                {
+                    G_devices.Remove((Device)dgAll_Devices.SelectedItems[0]);
+                }
             }
             else
             {
                 MessageBox.Show("Выберите оборудование");
             }
+        }
+
+        #endregion
+
+        #region Add/Update device page controls handlers
+        private void btnAdd_Device_Click(object sender, RoutedEventArgs e)
+        {
+            if (VerifyDataControls())
+            {
+                _service.AddDeviceToDB(new Device(0, tbAddAndUpdate_DeviceName.Text, tbAddAndUpdate_DeviceModel.Text,
+                    tbAddAndUpdate_DeviceDescription.Text,
+                    (Category)cbAddAndUpdate_DeviceCategory.SelectedItem,
+                    (Sector)cbAddAndUpdate_DeviceSector.SelectedItem));
+                G_devices = _service.GetDevicesFromDB();
+            }
+        }
+
+        private void btnUpdate_Device_Click(object sender, RoutedEventArgs e)
+        {
+            if (VerifyDataControls())
+            {
+                _service.UpdateDeviceInDB( new Device(
+                    ((Device)dgAll_Devices.SelectedItem).ID_device, 
+                    tbAddAndUpdate_DeviceName.Text, 
+                    tbAddAndUpdate_DeviceModel.Text,
+                    tbAddAndUpdate_DeviceDescription.Text,
+                    (Category)cbAddAndUpdate_DeviceCategory.SelectedItem,
+                    (Sector)cbAddAndUpdate_DeviceSector.SelectedItem));
+                G_devices = _service.GetDevicesFromDB();
+            }            
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -357,21 +254,59 @@ namespace catalog
             Grid_AllDevice.Visibility = Visibility.Visible;
         }
 
-        private void btnAdd_Device_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Main page category and sector controls handlers
+        private void btnAll_DeleteCategory_Click(object sender, RoutedEventArgs e)
         {
-            if (VerifyDataControls())
+            if (dgAll_Category.SelectedItem != null)
             {
-                AddDeviceToDB(connection, new Device(0, tbAddAndUpdate_DeviceName.Text, tbAddAndUpdate_DeviceModel.Text,
-                    tbAddAndUpdate_DeviceDescription.Text, 
-                    (Category)cbAddAndUpdate_DeviceCategory.SelectedItem,
-                    (Sector) cbAddAndUpdate_DeviceSector.SelectedItem));
+                try
+                {
+                    if (_service.DeleteCategoryFromDB((Category)dgAll_Category.SelectedItems[0]))
+                    {
+                        G_category.Remove((Category)dgAll_Category.SelectedItems[0]);
+                    }
+                }
+                catch (SqliteException exp)
+                {
+                    LocalDebug.Log(exp.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите категорию.");
             }
         }
+
+        private void btnAll_DeleteSector_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgAll_Sector.SelectedItem != null)
+            {
+                try
+                {
+                    if (_service.DeleteSectorFromDB((Sector)dgAll_Sector.SelectedItems[0]))
+                    {
+                        G_sector.Remove((Sector)dgAll_Sector.SelectedItems[0]);
+                    }
+                }
+                catch (SqliteException exp)
+                {
+                    LocalDebug.Log(exp.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите отрасль.");
+            }
+        }
+        #endregion
+
 
         #region Controls
         bool VerifyDataControls()
         {
-            if(tbAddAndUpdate_DeviceName.Text.Length == 0)
+            if (tbAddAndUpdate_DeviceName.Text.Length == 0)
             {
                 tbAddAndUpdate_DeviceName.Focus();
                 MessageBox.Show("Задайте имя оборудованию!");
@@ -397,68 +332,6 @@ namespace catalog
             cbAddAndUpdate_DeviceSector.SelectedItem = sector;
         }
         #endregion
-        private void btnAll_DeleteCategory_Click(object sender, RoutedEventArgs e)
-        {
-            if(dgAll_Category.SelectedItem != null)
-            {
-                try
-                {
-                    DeleteCategoryFromDB(connection, (Category)dgAll_Category.SelectedItems[0]);
-                }
-                catch (Microsoft.Data.Sqlite.SqliteException exp)
-                {
-                    LocalDebug.Log(exp.Message);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите категорию.");
-            }
-        }
 
-        private void btnUpdate_Device_Click(object sender, RoutedEventArgs e)
-        {
-            if (VerifyDataControls())
-            {
-                UpdateDeviceFromDB(connection, new Device(
-                    ((Device)dgAll_Devices.SelectedItem).ID_device, 
-                    tbAddAndUpdate_DeviceName.Text, 
-                    tbAddAndUpdate_DeviceModel.Text,
-                    tbAddAndUpdate_DeviceDescription.Text,
-                    (Category)cbAddAndUpdate_DeviceCategory.SelectedItem,
-                    (Sector)cbAddAndUpdate_DeviceSector.SelectedItem));
-                GetDevicesFromDB(connection);
-            }            
-        }
-
-        private void btnAll_DeleteSector_Click(object sender, RoutedEventArgs e)
-        {
-            if (dgAll_Sector.SelectedItem != null)
-            {
-                try
-                {
-                    DeleteSectorFromDB(connection, (Sector)dgAll_Category.SelectedItems[0]);
-                }
-                catch (Microsoft.Data.Sqlite.SqliteException exp)
-                {
-                    LocalDebug.Log(exp.Message);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите отрасль.");
-            }
-        }
-
-        private void dgAll_Devices_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var dataImage = ((Device)dgAll_Devices.SelectedItem).Image;
-            if (dataImage != null)
-            {
-                BitmapImage img = new BitmapImage();
-                img.StreamSource = new MemoryStream(dataImage);
-                imgAll_Device.Source = img;
-            }
-        }
     }
 }

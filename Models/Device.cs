@@ -9,6 +9,16 @@ namespace catalog.Models
 {
     public class Device
     {
+        public Device()
+        {
+            ID_device = 0;
+            Name = "";
+            Model = "";
+            Description = "";
+            Category = null;
+            Sector = null;
+            Image = new byte[0];
+        }
         public Device(int id_device, string name, string model, string description, Category category, Sector sector, byte[] img = null)
         {
             ID_device = id_device;
